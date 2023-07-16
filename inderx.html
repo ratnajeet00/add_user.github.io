@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add User</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group button {
+      padding: 8px 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-group button:hover {
+      background-color: #45a049;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 5px;
+    }
+
+    .success-message {
+      color: green;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Add User</h1>
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="form-group">
+      <button onclick="addUser()">Add User</button>
+    </div>
+    <div id="message" class="error-message"></div>
+  </div>
+
+  <script>
+    function addUser() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value;
+
+      const data = { username, password, email };
+
+      fetch("/addUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        const messageElement = document.getElementById("message");
+
+        if (result.message === "User created successfully") {
+          messageElement.textContent = "User created successfully";
+          messageElement.classList.remove("error-message");
+          messageElement.classList.add("success-message");
+        } else {
+          messageElement.textContent = "Error: " + result.message;
+          messageElement.classList.remove("success-message");
+          messageElement.classList.add("error-message");
+        }
+      })
+      .catch(error => {
+        console.error("Error adding user:", error);
+        const messageElement = document.getElementById("message");
+        messageElement.textContent = "Internal server error";
+        messageElement.classList.remove("success-message");
+        messageElement.classList.add("error-message");
+      });
+    }
+  </script>
+</body>
+</html>
